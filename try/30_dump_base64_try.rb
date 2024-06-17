@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 
 require_relative '../lib/redis/dump'
 require 'pry-byebug'
@@ -23,11 +22,6 @@ Redis::Dump.with_base64 = true
 @rdump.redis(0).keys.size
 #=> 2
 
-## Is base64 encoded
-@values = @rdump.dump
-@values[0]
-#=> "{\"db\":0,\"key\":\"stringkey1\",\"ttl\":-1,\"type\":\"string\",\"value\":\"c3RyaW5ndmFsdWUx\\n\",\"size\":12}"
-
 ## Can dump
 @values = @rdump.dump
 @values.size
@@ -37,6 +31,12 @@ Redis::Dump.with_base64 = true
 @rdump.load @values.join
 @rdump.redis(0).keys.size
 #=> 2
+
+## Is base64 encoded
+sleep 0.5  # take a beat to avoid race condition
+@values = @rdump.dump
+@values[0]
+#=> "{\"db\":0,\"key\":\"stringkey1\",\"ttl\":-1,\"type\":\"string\",\"value\":\"c3RyaW5ndmFsdWUx\\n\",\"size\":12}"
 
 # Clear DB 0
 db0 = Redis::Dump.new 0, @uri_base
