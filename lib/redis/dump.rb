@@ -77,9 +77,10 @@ class Redis
       entries = []
       each_database do |redis|
         chunk_entries = []
+        Redis::Dump.ld "[db#{redis.connection[:db]}] Memory before: #{Redis::Dump.memory_usage}kb"
         dump_keys = redis.keys(filter)
         dump_keys_size = dump_keys.size
-        Redis::Dump.ld "Memory after loading keys: #{Redis::Dump.memory_usage}kb"
+        Redis::Dump.ld "[db#{redis.connection[:db]}] Dumping #{dump_keys_size} keys: #{dump_keys.join(', ')}"
         dump_keys.each_with_index do |key,idx|
           entry, idxplus = key, idx+1
           if block_given?
@@ -109,6 +110,8 @@ class Redis
             entries << self.class.encoder.encode(Redis::Dump.dump(redis, entry))
           end
         end
+
+        Redis::Dump.ld "[db#{redis.connection[:db]}] Memory after: #{Redis::Dump.memory_usage}kb"
       end
       entries
     end
