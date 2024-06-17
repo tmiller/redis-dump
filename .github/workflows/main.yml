@@ -45,7 +45,7 @@ jobs:
           - ruby: '3.0'
             bundler: latest
             rubygems: latest
-            redis: latest
+            redis: 5.2
 
           - ruby: '2.7'
             bundler: '2.4.22'
