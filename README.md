@@ -6,7 +6,8 @@
 
 One of:
 1. Gemfile: `gem 'redis-dump', '~> 0.4.0'`
-1. Install manually: `gem install redis-dump`
+2. Install manually: `gem install redis-dump`
+3. Clone with git: `git clone git@github.com:delano/redis-dump.git`
 
 
 

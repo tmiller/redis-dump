@@ -50,7 +50,7 @@ PLATFORMS
 
 DEPENDENCIES
   drydock (>= 0.6.9)
-  oj (>= 3.13.14)
+  oj (>= 3.16.4)
   rake (~> 13.0)
   redis (>= 4.0, < 5.0)
   rubocop (~> 1.64.1)
