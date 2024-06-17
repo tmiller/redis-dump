@@ -1,4 +1,6 @@
-require 'redis/dump'
+# frozen_string_literal: true
+
+require_relative '../lib/redis/dump'
 
 # The test instance of redis must be running:
 # $ redis-server try/redis.conf
@@ -30,13 +32,6 @@ Redis::Dump.safe = true
 ## Dump these specific keys
 @rdump.dump('*gloria*').sort
 #=> ['{"db":0,"key":"gloria:0","ttl":-1,"type":"string","value":"gloria_value[0]","size":15}','{"db":0,"key":"gloria:1","ttl":-1,"type":"string","value":"gloria_value[1]","size":15}','{"db":0,"key":"gloria:2","ttl":-1,"type":"string","value":"gloria_value[2]","size":15}']
-
-
-## Dump none existent keys (NOT SUPPORTED AS OF 0.3.0)
-unknown_keys = [URI.parse("#{@uri_base}/0/unknownkey1"), URI.parse("#{@uri_base}/1/unknownkey2")]
-@rdump.dump(unknown_keys).sort
-##=> ['{"db":0,"key":"unknownkey1","ttl":-1,"type":"none","value":"","size":0}', '{"db":1,"key":"unknownkey2","ttl":-1,"type":"none","value":"","size":0}']
-
 
 Redis::Dump.safe = true
 db0 = Redis::Dump.new 0..1, @uri_base

@@ -1,5 +1,7 @@
-require 'redis/dump'
-require 'pry'
+# frozen_string_literal: true
+
+require_relative '../lib/redis/dump'
+require 'pry-byebug'
 
 # The test instance of redis must be running:
 # $ redis-server try/redis.conf
@@ -31,20 +33,17 @@ Redis::Dump.with_base64 = true
 @values.size
 #=> 2
 
-# Clear DB 0
-db0 = Redis::Dump.new 0, @uri_base
-db0.redis(0).flushdb
-db0.redis(0).keys.size
-#=> 0
-
 ## Can load data
 @rdump.load @values.join
 @rdump.redis(0).keys.size
 #=> 2
 
 ## Is base64 decoded
-stringkey = @rdump.redis(0).get('stringkey1')
-#=> 'stringvalue1'
+require 'base64'
+encoded_string = Base64.encode64('stringvalue3')
+@rdump.redis(0).set 'stringkey3', encoded_string
+stringkey = @rdump.redis(0).get('stringkey3')
+##=> 'stringvalue1'
 
 # Clear DB 0
 db0 = Redis::Dump.new 0, @uri_base

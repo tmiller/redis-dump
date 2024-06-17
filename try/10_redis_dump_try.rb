@@ -1,4 +1,6 @@
-require 'redis/dump'
+# frozen_string_literal: true
+
+require_relative '../lib/redis/dump'
 
 # The test instance of redis must be running:
 # $ redis-server try/redis.conf
@@ -31,12 +33,6 @@ Redis::Dump.safe = true
 @values.size
 #=> 5
 
-# Clear DB 0
-db0 = Redis::Dump.new 0, @uri_base
-db0.redis(0).flushdb
-db0.redis(0).keys.size
-#=> 0
-
 ## Can load data
 @rdump.load @values.join
 @rdump.redis(0).keys.size
@@ -56,6 +52,14 @@ Redis::Dump.safe = false
 @rdump.load @values.join
 #=> 5
 
+## Clear DB 0
+db0 = Redis::Dump.new 0, @uri_base
+db0.redis(0).flushdb
+db0.redis(0).keys.size
+#=> 0
+
+## Clear DB 0 in safe mode
 Redis::Dump.safe = true
 db0 = Redis::Dump.new 0, @uri_base
 db0.redis(0).flushdb
+#=> "OK"
