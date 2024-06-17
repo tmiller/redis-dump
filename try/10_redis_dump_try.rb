@@ -1,9 +1,11 @@
-require 'redis/dump'
+# frozen_string_literal: true
+
+require_relative '../lib/redis/dump'
 
 # The test instance of redis must be running:
 # $ redis-server try/redis.conf
 
-@uri_base = "redis://127.0.0.1:6371"
+@uri_base = "redis://127.0.0.1:6379"
 
 Redis::Dump.debug = false
 Redis::Dump.safe = true
@@ -21,7 +23,7 @@ Redis::Dump.safe = true
 @rdump.redis(0).hset 'hashkey', 'field_b', 'value_b'
 @rdump.redis(0).hset 'hashkey', 'field_c', 'value_c'
 3.times { |idx| @rdump.redis(0).rpush 'listkey', "value_#{idx}" }
-4.times { |idx| @rdump.redis(0).sadd 'setkey', "value_#{idx}" }
+4.times { |idx| @rdump.redis(0).sadd? 'setkey', "value_#{idx}" }
 5.times { |idx| @rdump.redis(0).zadd 'zsetkey', idx.zero? ? 100 : 100*idx, "value_#{idx}" }
 @rdump.redis(0).keys.size
 #=> 5
@@ -30,12 +32,6 @@ Redis::Dump.safe = true
 @values = @rdump.dump
 @values.size
 #=> 5
-
-# Clear DB 0
-db0 = Redis::Dump.new 0, @uri_base
-db0.redis(0).flushdb
-db0.redis(0).keys.size
-#=> 0
 
 ## Can load data
 @rdump.load @values.join
@@ -56,7 +52,14 @@ Redis::Dump.safe = false
 @rdump.load @values.join
 #=> 5
 
+## Clear DB 0
+db0 = Redis::Dump.new 0, @uri_base
+db0.redis(0).flushdb
+db0.redis(0).keys.size
+#=> 0
+
+## Clear DB 0 in safe mode
 Redis::Dump.safe = true
 db0 = Redis::Dump.new 0, @uri_base
 db0.redis(0).flushdb
-
+#=> "OK"

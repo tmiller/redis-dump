@@ -1,11 +1,16 @@
+
+
 unless defined?(RD_HOME)
   RD_HOME = File.expand_path(File.join(File.dirname(__FILE__), '..', '..') )
 end
 
 require 'redis'
-require 'uri/redis'
 require 'yajl'
 require 'base64'
+
+require 'uri/redis'
+
+require_relative "dump/version"
 
 class Redis
   class Dump
@@ -72,9 +77,10 @@ class Redis
       entries = []
       each_database do |redis|
         chunk_entries = []
+        Redis::Dump.ld "[db#{redis.connection[:db]}] Memory before: #{Redis::Dump.memory_usage}kb"
         dump_keys = redis.keys(filter)
         dump_keys_size = dump_keys.size
-        Redis::Dump.ld "Memory after loading keys: #{Redis::Dump.memory_usage}kb"
+        Redis::Dump.ld "[db#{redis.connection[:db]}] Dumping #{dump_keys_size} keys: #{dump_keys.join(', ')}"
         dump_keys.each_with_index do |key,idx|
           entry, idxplus = key, idx+1
           if block_given?
@@ -104,6 +110,8 @@ class Redis
             entries << self.class.encoder.encode(Redis::Dump.dump(redis, entry))
           end
         end
+
+        Redis::Dump.ld "[db#{redis.connection[:db]}] Memory after: #{Redis::Dump.memory_usage}kb"
       end
       entries
     end
@@ -158,7 +166,9 @@ class Redis
           end
           begin
             val, type = obj['value'], obj['type']
+            Redis::Dump.ld " > load `#{val}`"
             if Redis::Dump.with_base64 && type === 'string'
+              Redis::Dump.ld " > load+decode64 for `#{val}`"
               val = Base64.decode64 val
             end
             ret = Redis::Dump.set_value this_redis, obj['key'], type, val, obj['ttl']
@@ -234,7 +244,7 @@ class Redis
         list.each { |value|  this_redis.rpush key, value }
       end
       def set_value_set(this_redis, key, set)
-        set.each { |value|  this_redis.sadd key, value }
+        set.each { |value|  this_redis.sadd? key, value }
       end
       def set_value_zset(this_redis, key, zset)
         zset.each { |pair|  this_redis.zadd key, pair[1].to_f, pair[0] }
@@ -260,24 +270,6 @@ class Redis
       def stringify_none  (this_redis, key, v=nil)  (v || '')                                                     end
     end
     extend Redis::Dump::ClassMethods
-
-    module VERSION
-      @path = File.join(RD_HOME, 'VERSION')
-      class << self
-        attr_reader :version, :path
-        def version
-          @version || read_version
-        end
-        def read_version
-          return if @version
-          @version = File.read(path).strip!
-        end
-        def prerelease?() false end
-        def to_a()     version.split('.')   end
-        def to_s()     version              end
-        def inspect()  version              end
-      end
-    end
 
     class Problem < RuntimeError
       def initialize(*args)
