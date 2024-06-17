@@ -74,12 +74,11 @@ jobs:
         # and cache the result automatically. Ran into an issue
         # with the caching and multiple ruby versions. Needs
         # further investigation.
-        bundler-cache: false
+        bundler-cache: true  # runs bundle install
 
     - name: Re-run bundle install
       run: |
         gem install redis --version ${{ matrix.redis }}
-        # bundle install
 
     - name: Run the tryouts
       run: bundle exec try -v try/*_try.rb
