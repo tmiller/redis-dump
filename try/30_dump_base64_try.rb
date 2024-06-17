@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 require_relative '../lib/redis/dump'
 require 'pry-byebug'
@@ -7,7 +8,7 @@ require 'pry-byebug'
 
 @uri_base = "redis://127.0.0.1:6379"
 
-Redis::Dump.debug = false
+Redis::Dump.debug = true
 Redis::Dump.safe = true
 Redis::Dump.with_base64 = true
 
@@ -22,6 +23,11 @@ Redis::Dump.with_base64 = true
 @rdump.redis(0).keys.size
 #=> 2
 
+## Is base64 encoded
+@values = @rdump.dump
+@values[0]
+#=> "{\"db\":0,\"key\":\"stringkey1\",\"ttl\":-1,\"type\":\"string\",\"value\":\"c3RyaW5ndmFsdWUx\\n\",\"size\":12}"
+
 ## Can dump
 @values = @rdump.dump
 @values.size
@@ -32,18 +38,12 @@ Redis::Dump.with_base64 = true
 @rdump.redis(0).keys.size
 #=> 2
 
-## Is base64 encoded
-sleep 0.5  # take a beat to avoid race condition
-@values = @rdump.dump
-@values[0]
-#=> "{\"db\":0,\"key\":\"stringkey1\",\"ttl\":-1,\"type\":\"string\",\"value\":\"c3RyaW5ndmFsdWUx\\n\",\"size\":12}"
-
 # Clear DB 0
 db0 = Redis::Dump.new 0, @uri_base
 db0.redis(0).flushdb
 db0.redis(0).keys.size
-#=> 0
+##=> 0
 
 Redis::Dump.safe = true
 db0 = Redis::Dump.new 0, @uri_base
-db0.redis(0).flushdb
+# db0.redis(0).flushdb
