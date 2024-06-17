@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Ruby ${{ matrix.ruby }}
+    name: "Ruby ${{ matrix.ruby }}${{ matrix.redis != null && matrix.redis != '' ? ' redis:' + matrix.redis : '' }}"
     strategy:
       fail-fast: true
       matrix:
@@ -29,12 +29,12 @@ jobs:
           - ruby: '3.2'
             bundler: latest
             rubygems: latest
-            redis: 4.7
+            redis: 4.8
 
           - ruby: '3.2'
             bundler: latest
             rubygems: latest
-            redis: 4.8
+            redis: 4.7
 
           - ruby: '3.1'
             bundler: latest
@@ -76,7 +76,8 @@ jobs:
         # further investigation.
         bundler-cache: true  # runs bundle install
 
-    - name: Re-run bundle install
+    - name: Install redis gem @ ${{ matrix.redis }}
+      if: matrix.redis != ''
       run: |
         gem install redis --version ${{ matrix.redis }}
 
