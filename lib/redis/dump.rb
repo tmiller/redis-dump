@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+
 
 unless defined?(RD_HOME)
   RD_HOME = File.expand_path(File.join(File.dirname(__FILE__), '..', '..') )
@@ -265,24 +265,6 @@ class Redis
       def stringify_none  (this_redis, key, v=nil)  (v || '')                                                     end
     end
     extend Redis::Dump::ClassMethods
-
-    module VERSION
-      @path = File.join(RD_HOME, 'VERSION')
-      class << self
-        attr_reader :version, :path
-        def version
-          @version || read_version
-        end
-        def read_version
-          return if @version
-          @version = File.read(path).strip!
-        end
-        def prerelease?() false end
-        def to_a()     version.split('.')   end
-        def to_s()     version              end
-        def inspect()  version              end
-      end
-    end
 
     class Problem < RuntimeError
       def initialize(*args)
