@@ -1,35 +1,63 @@
-# Redis::Dump
+# Redis-Dump v0.5 PRE
 
-TODO: Delete this and the text below, and describe your gem
+*Backup and restore your Redis data to and from JSON.*
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/redis/dump`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-## Installation
-
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
-
-Install the gem and add to the application's Gemfile by executing:
-
-    $ bundle add UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
-
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-    $ gem install UPDATE_WITH_YOUR_GEM_NAME_PRIOR_TO_RELEASE_TO_RUBYGEMS_ORG
+**NOTE: This is beta software. TEST IT BEFORE RELYING ON IT.**
 
 ## Usage
 
-TODO: Write usage instructions here
+There are two executables: `redis-dump` and `redis-load`.
 
-## Development
+```
+$ redis-dump
+$ redis-dump -u 127.0.0.1:6379 > db_full.json
+$ redis-dump -u 127.0.0.1:6379 -d 15 > db_db15.json
 
-After checking out the repo, run `bin/setup` to install dependencies. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+$ < db_full.json redis-load
+$ < db_db15.json redis-load -d 15
+# OR
+$ cat db_full | redis-load
+$ cat db_db15.json | redis-load -d 15
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+# You can specify the redis URI via an environment variable
+$ export REDIS_URI=127.0.0.1:6379
+$ redis-dump
 
-## Contributing
+# If your instance uses a password (such as on RedisToGo), you
+# can specify the Redis URL as such:
+# :<password>@<domain>:<port>
+# Note the leading colon is important for specifying no username.
+$ redis-dump -u :234288a830f009980e08@example.redistogo.com:9055
+```
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/redis-dump.
+## Output format
 
-## License
+All redis datatypes are output to a simple JSON object. All objects have the following 5 fields:
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+* db (Integer)
+* key (String)
+* ttl (Integer): The amount of time in seconds that the key will live. If no expire is set, it's -1.
+* type (String), one of: string, list, set, zset, hash, none.
+* value (String): A JSON-encoded string. For keys of type list, set, zset, and hash, the data is given a specific structure (see below).
+
+Here are examples of each datatype:
+
+```
+{"db":0,"key":"hashkey","ttl":-1,"type":"hash","value":{"field_a":"value_a","field_b":"value_b","field_c":"value_c"},"size":42}
+{"db":0,"key":"listkey","ttl":-1,"type":"list","value":["value_0","value_1","value_2","value_0","value_1","value_2"],"size":42}
+{"db":0,"key":"setkey","ttl":-1,"type":"set","value":["value_2","value_0","value_1","value_3"],"size":28}
+{"db":0,"key":"zsetkey","ttl":-1,"type":"zset","value":[["value_0","100"],["value_1","100"],["value_2","200"],["value_3","300"],["value_4","400"]],"size":50}
+{"db":0,"key":"stringkey","ttl":79,"type":"string","value":"stringvalue","size":11}
+```
+
+### Important note about TTLs
+
+One of the purposes of redis-dump is the ability to restore the database to a known state. When you restore a redis database from a redis-dump file, *the expires are reset to their values at the time the dump was created*. This is different from restoring from Redis' native .rdb or .aof files (expires are stored relative to the actual time they were set).
+
+## Output directly to an encrypted file
+
+For most sensitive data, you should consider encrypting the data directly without writing first to a temp file. You can do this using the power of [gpg](http://www.gnupg.org/) and file descriptors. Here are a couple examples:
+
+```
+# Encrypt the data (interactive)
+$ redis-dump -u 127.0.0.1:6379 -d 15 | gpg --force-mdc -v -c > path/2/backup-db1
