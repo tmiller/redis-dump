@@ -38,13 +38,6 @@ Redis::Dump.with_base64 = true
 @rdump.redis(0).keys.size
 #=> 2
 
-## Is base64 decoded
-require 'base64'
-encoded_string = Base64.encode64('stringvalue3')
-@rdump.redis(0).set 'stringkey3', encoded_string
-stringkey = @rdump.redis(0).get('stringkey3')
-##=> 'stringvalue1'
-
 # Clear DB 0
 db0 = Redis::Dump.new 0, @uri_base
 db0.redis(0).flushdb
