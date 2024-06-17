@@ -239,7 +239,7 @@ class Redis
         list.each { |value|  this_redis.rpush key, value }
       end
       def set_value_set(this_redis, key, set)
-        set.each { |value|  this_redis.sadd key, value }
+        set.each { |value|  this_redis.sadd? key, value }
       end
       def set_value_zset(this_redis, key, zset)
         zset.each { |pair|  this_redis.zadd key, pair[1].to_f, pair[0] }
