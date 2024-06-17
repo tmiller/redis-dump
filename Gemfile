@@ -4,7 +4,7 @@ source "https://rubygems.org"
 
 gem "drydock", ">= 0.6.9"
 gem "oj", ">= 3.16.4"
-gem "redis", ">= 4.0", "< 5.0"
+gem "redis", ">= 4.0", "< 6.0"
 gem "uri-redis", ">= 1.3.0"
 gem "yajl-ruby", ">= 1.4.3"
 
