@@ -4,7 +4,7 @@ require 'pry'
 # The test instance of redis must be running:
 # $ redis-server try/redis.conf
 
-@uri_base = "redis://127.0.0.1:6371"
+@uri_base = "redis://127.0.0.1:6379"
 
 Redis::Dump.debug = false
 Redis::Dump.safe = true
@@ -55,4 +55,3 @@ db0.redis(0).keys.size
 Redis::Dump.safe = true
 db0 = Redis::Dump.new 0, @uri_base
 db0.redis(0).flushdb
-
