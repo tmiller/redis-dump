@@ -2,6 +2,6 @@
 
 class Redis
   class Dump
-    VERSION = "0.5.0-pre"
+    VERSION = "0.6.0"
   end
 end

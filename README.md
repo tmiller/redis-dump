@@ -1,4 +1,4 @@
-# Redis::Dump - v0.6
+# Redis::Dump - v0.6.0
 
 *Redis to JSON and back again. Dump and load Redis databases to/from JSON files.*
 
