@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: "Ruby ${{ matrix.ruby }}${{ matrix.redis != null && matrix.redis != '' ? ' redis:' + matrix.redis : '' }}"
+    name: "Ruby ${{ matrix.ruby }} w/ redis:${{ matrix.redis }}"
     strategy:
       fail-fast: true
       matrix:
@@ -20,6 +20,7 @@ jobs:
           - ruby: '3.3'
             bundler: latest
             rubygems: latest
+            redis: latest
 
           - ruby: '3.2'
             bundler: latest
@@ -39,14 +40,17 @@ jobs:
           - ruby: '3.1'
             bundler: latest
             rubygems: latest
+            redis: latest
 
           - ruby: '3.0'
             bundler: latest
             rubygems: latest
+            redis: latest
 
           - ruby: '2.7'
             bundler: '2.4.22'
             rubygems: '3.2.3'
+            redis: latest
 
     services:
       redis:
