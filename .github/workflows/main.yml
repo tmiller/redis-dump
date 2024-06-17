@@ -12,29 +12,45 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    name: Ruby ${{ matrix.ruby }}
+    name: "Ruby ${{ matrix.ruby }} w/ redis:${{ matrix.redis }}"
     strategy:
+      fail-fast: true
       matrix:
         include:
           - ruby: '3.3'
             bundler: latest
             rubygems: latest
+            redis: 5.2
 
           - ruby: '3.2'
             bundler: latest
             rubygems: latest
+            redis: 5.2
+
+          - ruby: '3.2'
+            bundler: latest
+            rubygems: latest
+            redis: 4.8
+
+          - ruby: '3.2'
+            bundler: latest
+            rubygems: latest
+            redis: 4.7
 
           - ruby: '3.1'
             bundler: latest
             rubygems: latest
+            redis: 5.2
 
           - ruby: '3.0'
             bundler: latest
             rubygems: latest
+            redis: 5.2
 
           - ruby: '2.7'
             bundler: '2.4.22'
             rubygems: '3.2.3'
+            redis: 5.2
 
     services:
       redis:
@@ -62,10 +78,12 @@ jobs:
         # and cache the result automatically. Ran into an issue
         # with the caching and multiple ruby versions. Needs
         # further investigation.
-        bundler-cache: false
+        bundler-cache: true  # runs bundle install
 
-    - name: Re-run bundle install
-      run: bundle install
+    - name: Install redis gem @ ${{ matrix.redis }}
+      if: matrix.redis != ''
+      run: |
+        gem install redis --version ${{ matrix.redis }}
 
     - name: Run the tryouts
       run: bundle exec try -v try/*_try.rb

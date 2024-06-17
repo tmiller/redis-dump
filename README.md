@@ -1,6 +1,7 @@
-# Redis::Dump - v0.5 PRE
+# Redis::Dump - v0.6.0
 
-*Backup and restore your Redis data to and from JSON.*
+*Redis to JSON and back again. Dump and load Redis databases to/from JSON files.*
+
 
 ## Installation
 

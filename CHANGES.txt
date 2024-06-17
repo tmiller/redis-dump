@@ -2,6 +2,11 @@ REDIS-DUMP, CHANGES
 
 #### 0.6.0 (2024-06-17) ###############################
 
+* ADDED: Supports redis-rb 5.0
+* ADDED: Supports SSL via rediss://
+* CHANGED: Updated dependencies (see https://github.com/delano/redis-dump/pull/37)
+* FIXED: Resolved `sadd` warnings in redis 4.0 #35
+
 
 #### 0.5.0 (2023-01-17) ###############################
 
