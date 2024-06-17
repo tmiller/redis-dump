@@ -23,7 +23,7 @@ Redis::Dump.safe = true
 @rdump.redis(0).hset 'hashkey', 'field_b', 'value_b'
 @rdump.redis(0).hset 'hashkey', 'field_c', 'value_c'
 3.times { |idx| @rdump.redis(0).rpush 'listkey', "value_#{idx}" }
-4.times { |idx| @rdump.redis(0).sadd 'setkey', "value_#{idx}" }
+4.times { |idx| @rdump.redis(0).sadd? 'setkey', "value_#{idx}" }
 5.times { |idx| @rdump.redis(0).zadd 'zsetkey', idx.zero? ? 100 : 100*idx, "value_#{idx}" }
 @rdump.redis(0).keys.size
 #=> 5
