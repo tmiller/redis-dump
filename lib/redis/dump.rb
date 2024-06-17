@@ -163,7 +163,9 @@ class Redis
           end
           begin
             val, type = obj['value'], obj['type']
+            Redis::Dump.ld " > load `#{val}`"
             if Redis::Dump.with_base64 && type === 'string'
+              Redis::Dump.ld " > load+decode64 for `#{val}`"
               val = Base64.decode64 val
             end
             ret = Redis::Dump.set_value this_redis, obj['key'], type, val, obj['ttl']
