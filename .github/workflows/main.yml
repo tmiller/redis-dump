@@ -14,8 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Ruby ${{ matrix.ruby }}
     strategy:
+      fail-fast: true
       matrix:
-        fail-fast: true
         include:
           - ruby: '3.3'
             bundler: latest
