@@ -15,9 +15,9 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = Gem::Requirement.new(">= 2.7.8")
 
   spec.files = `git ls-files -z`.split("\x0").reject do |f|
-    f.match(%r{\A(?:bin|test|spec|features)/|\.(?:git|circleci)|appveyor})
+    f.match(%r{\A(?:bin|test|spec|features|try)/|\.(?:git|circleci)|appveyor|pre|rub})
   end
-  spec.bindir        = "bin"
-  spec.executables   = spec.files.grep(%r{\Abin/}) { |f| File.basename(f) }
+  spec.bindir        = "exe"
+  spec.executables   = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 end
