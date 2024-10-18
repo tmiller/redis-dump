@@ -60,10 +60,10 @@ class Redis
     def connect(this_uri)
       self.class.ld 'CONNECT: ' << this_uri
       opts = {
-        :url => this_uri
+        :url => this_uri,
         :ssl_params => {
-          :verify_mode => OpenSSL::SSL::VERIFY_NONE
-        }
+          :verify_mode => OpenSSL::SSL::VERIFY_NONE,
+        },
       }
       opts[:password] = Redis::Dump.password if Redis::Dump.password
       opts[:timeout] = Redis::Dump.timeout if Redis::Dump.timeout
